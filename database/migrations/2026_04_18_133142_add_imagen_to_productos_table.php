@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('carrito_detalles', function (Blueprint $table) {
-            $table->renameColumn('subtotal', 'precio_unitario');
+        Schema::table('productos', function (Blueprint $table) {
+            $table->string('imagen')->nullable()->after('stock');
         });
     }
 
     public function down(): void
     {
-        Schema::table('carrito_detalles', function (Blueprint $table) {
-            $table->renameColumn('precio_unitario', 'subtotal');
+        Schema::table('productos', function (Blueprint $table) {
+            $table->dropColumn('imagen');
         });
     }
 };
