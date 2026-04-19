@@ -7,8 +7,8 @@ use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductoController;
-use App\Http\Controllers\Admin\ReporteController;
 
+use App\Http\Controllers\Admin\ReporteController;
 // ─────────────────────────────────────────
 // Rutas públicas (sin login)
 // ─────────────────────────────────────────
