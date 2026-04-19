@@ -20,9 +20,10 @@ class Carrito extends Model
     {
         return $this->hasMany(CarritoDetalle::class);
     }
-}
-// Método para calcular el total del carrito
-public function total()
-{
-    return $this->carritoDetalles->sum('subtotal');
+
+    // Método para calcular el total del carrito
+    public function total()
+    {
+        return $this->carritoDetalles->sum('subtotal');
+    }
 }
