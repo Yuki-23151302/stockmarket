@@ -1,31 +1,32 @@
-<?php
+?php
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Producto;
+use App\Models\Categoria;
+use Illuminate\Http\Request;
 
 class CatalogoController extends Controller
 {
     public function index(Request $request)
     {
-        // Iniciar consulta
-        $query = Producto::query();
+        $categorias = Categoria::all();
 
-        // 🔍 Filtro por nombre (opcional)
+        // Construir query con filtros opcionales
+        $query = Producto::with('categoria')->where('stock', '>', 0);
+
+        // Filtro por categoría
+        if ($request->filled('categoria_id')) {
+            $query->where('categoria_id', $request->categoria_id);
+        }
+
+        // Buscador por nombre
         if ($request->filled('buscar')) {
             $query->where('nombre', 'like', '%' . $request->buscar . '%');
         }
 
-        // 🔍 Filtro por categoría (opcional, si tienes categorias)
-        if ($request->filled('categoria')) {
-            $query->where('categoria_id', $request->categoria);
-        }
-
-        // Obtener productos
         $productos = $query->get();
 
-        // Retornar vista
-        return view('catalogo.index', compact('productos'));
+        return view('cliente.catalogo', compact('productos', 'categorias'));
     }
 }
