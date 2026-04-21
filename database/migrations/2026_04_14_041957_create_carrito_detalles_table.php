@@ -10,19 +10,12 @@ return new class extends Migration
     {
         Schema::create('carrito_detalles', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('carrito_id')
-                  ->constrained('carritos')
-                  ->onDelete('cascade');
-
-            $table->foreignId('producto_id')
-                  ->constrained('productos')
-                  ->onDelete('cascade');
-
+            $table->unsignedBigInteger('carrito_id');
+            $table->foreign('carrito_id')->references('id')->on('carritos')->onDelete('cascade');
+            $table->unsignedBigInteger('producto_id');
+            $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
             $table->integer('cantidad');
-
-            $table->decimal('subtotal', 8, 2);
-
+            $table->decimal('precio_unitario', 10, 2);
             $table->timestamps();
         });
     }

@@ -9,9 +9,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\Admin\ReporteController;
 
-// ─────────────────────────────────────────
 // Rutas públicas (sin login)
-// ─────────────────────────────────────────
 Route::get('/', fn() => redirect()->route('login'));
 
 Route::get('/login',    [AuthController::class, 'showLogin'])->name('login');
@@ -19,9 +17,8 @@ Route::post('/login',   [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register',[AuthController::class, 'register'])->name('register.post');
 
-// ─────────────────────────────────────────
 // Rutas de cliente (requieren login)
-// ─────────────────────────────────────────
+
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -41,9 +38,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pedidos',          [PerfilController::class, 'pedidos'])->name('pedidos');
 });
 
-// ─────────────────────────────────────────
+
 // Rutas de administrador
-// ─────────────────────────────────────────
+
 Route::middleware(['auth', 'es.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
 
