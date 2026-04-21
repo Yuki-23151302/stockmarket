@@ -10,16 +10,16 @@ class CarritoDetalle extends Model
         'carrito_id',
         'producto_id',
         'cantidad',
-        'subtotal'
+        'precio_unitario',
     ];
-
-    public function carrito()
-    {
-        return $this->belongsTo(Carrito::class);
-    }
 
     public function producto()
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    public function carrito()
+    {
+        return $this->belongsTo(Carrito::class);
     }
 }

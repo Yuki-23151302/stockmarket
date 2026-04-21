@@ -10,19 +10,12 @@ return new class extends Migration
     {
         Schema::create('detalle_ventas', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('venta_id')
-                  ->constrained('ventas')
-                  ->onDelete('cascade');
-
-            $table->foreignId('producto_id')
-                  ->constrained('productos')
-                  ->onDelete('cascade');
-
+            $table->unsignedBigInteger('venta_id');
+            $table->foreign('venta_id')->references('id')->on('ventas')->onDelete('cascade');
+            $table->unsignedBigInteger('producto_id');
+            $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade');
             $table->integer('cantidad');
-
-            $table->decimal('precio_unitario', 8, 2);
-
+            $table->decimal('precio_unitario', 10, 2);
             $table->timestamps();
         });
     }

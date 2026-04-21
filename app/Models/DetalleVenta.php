@@ -10,16 +10,16 @@ class DetalleVenta extends Model
         'venta_id',
         'producto_id',
         'cantidad',
-        'precio_unitario'
+        'precio_unitario',
     ];
-
-    public function venta()
-    {
-        return $this->belongsTo(Venta::class);
-    }
 
     public function producto()
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    public function venta()
+    {
+        return $this->belongsTo(Venta::class);
     }
 }

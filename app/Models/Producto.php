@@ -11,21 +11,12 @@ class Producto extends Model
         'descripcion',
         'precio',
         'stock',
-        'categoria_id'
+        'categoria_id',
+        'imagen',
     ];
 
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
-    }
-
-    public function carritoDetalles()
-    {
-        return $this->hasMany(CarritoDetalle::class);
-    }
-
-    public function detalleVentas()
-    {
-        return $this->hasMany(DetalleVenta::class);
     }
 }

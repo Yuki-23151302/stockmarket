@@ -8,7 +8,7 @@ class Categoria extends Model
 {
     protected $fillable = [
         'nombre',
-        'descripcion'
+        'descripcion',
     ];
 
     public function productos()

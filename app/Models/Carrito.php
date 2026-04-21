@@ -8,7 +8,7 @@ class Carrito extends Model
 {
     protected $fillable = [
         'user_id',
-        'fecha_creacion'
+        'fecha_creacion',
     ];
 
     public function user()
@@ -19,11 +19,5 @@ class Carrito extends Model
     public function carritoDetalles()
     {
         return $this->hasMany(CarritoDetalle::class);
-    }
-
-    // Método para calcular el total del carrito
-    public function total()
-    {
-        return $this->carritoDetalles->sum('subtotal');
     }
 }
