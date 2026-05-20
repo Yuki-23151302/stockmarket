@@ -12,111 +12,110 @@ use Illuminate\Support\Facades\DB;
 
 class CarritoController extends Controller
 {
-    // Ver carrito
+    // ── Ver carrito ──────────────────────────────────
     public function index()
     {
-        $carrito = $this->obtenerOCrearCarrito();
+        $carrito  = $this->obtenerOCrearCarrito();
         $detalles = $carrito->carritoDetalles()->with('producto')->get();
-        $total = $detalles->sum('subtotal');
+        $total    = $detalles->sum(fn($d) => $d->cantidad * $d->precio_unitario);
 
         return view('cliente.carrito', compact('detalles', 'total'));
     }
 
-    // Agregar producto
+    // ── Agregar producto al carrito ──────────────────
     public function agregar(Request $request)
     {
         $request->validate([
             'producto_id' => 'required|exists:productos,id',
-            'cantidad' => 'required|integer|min:1',
+            'cantidad'    => 'required|integer|min:1',
         ]);
 
         $producto = Producto::findOrFail($request->producto_id);
-        $carrito = $this->obtenerOCrearCarrito();
+        $carrito  = $this->obtenerOCrearCarrito();
 
+        // Si ya existe el producto en el carrito, sumar cantidad
         $detalle = $carrito->carritoDetalles()
             ->where('producto_id', $producto->id)
             ->first();
 
         if ($detalle) {
             $detalle->cantidad += $request->cantidad;
-            $detalle->subtotal = $detalle->cantidad * $producto->precio;
             $detalle->save();
         } else {
             $carrito->carritoDetalles()->create([
-                'producto_id' => $producto->id,
-                'cantidad' => $request->cantidad,
-                'subtotal' => $producto->precio * $request->cantidad,
+                'producto_id'    => $producto->id,
+                'cantidad'       => $request->cantidad,
+                'precio_unitario'=> $producto->precio,
             ]);
         }
 
-        return redirect()->back()->with('success', 'Producto agregado al carrito');
+        return redirect()->back()->with('success', 'Producto agregado al carrito.');
     }
 
-    // Actualizar cantidad
+    // ── Actualizar cantidad ──────────────────────────
     public function actualizar(Request $request)
     {
         $request->validate([
             'detalle_id' => 'required|exists:carrito_detalles,id',
-            'cantidad' => 'required|integer|min:1',
+            'cantidad'   => 'required|integer|min:1',
         ]);
 
         $detalle = CarritoDetalle::findOrFail($request->detalle_id);
-        $detalle->cantidad = $request->cantidad;
-        $detalle->subtotal = $detalle->cantidad * $detalle->producto->precio;
-        $detalle->save();
+        $detalle->update(['cantidad' => $request->cantidad]);
 
-        return redirect()->route('carrito')->with('success', 'Cantidad actualizada');
+        return redirect()->route('carrito')->with('success', 'Cantidad actualizada.');
     }
 
-    // Eliminar producto
+    // ── Eliminar producto del carrito ────────────────
     public function eliminar($id)
     {
         CarritoDetalle::findOrFail($id)->delete();
-        return redirect()->route('carrito')->with('success', 'Producto eliminado');
+        return redirect()->route('carrito')->with('success', 'Producto eliminado.');
     }
 
-    // Finalizar compra
+    // ── Finalizar compra ─────────────────────────────
     public function finalizar()
     {
-        $carrito = $this->obtenerOCrearCarrito();
+        $carrito  = $this->obtenerOCrearCarrito();
         $detalles = $carrito->carritoDetalles()->with('producto')->get();
 
         if ($detalles->isEmpty()) {
-            return redirect()->route('carrito')->with('error', 'Carrito vacío');
+            return redirect()->route('carrito')
+                ->with('error', 'Tu carrito está vacío.');
         }
 
-        DB::transaction(function () use ($detalles, $carrito) {
+        DB::transaction(function () use ($carrito, $detalles) {
+            $total = $detalles->sum(fn($d) => $d->cantidad * $d->precio_unitario);
 
-            $total = $detalles->sum('subtotal');
-
+            // Crear la venta
             $venta = Venta::create([
-                'user_id' => auth()->id(),
-                'fecha_venta' => now(),
-                'total' => $total,
-                'descuento' => 0
+                'user_id'    => auth()->id(),
+                'fecha_venta'=> now(),
+                'total'      => $total,
             ]);
 
+            // Crear detalles y descontar stock
             foreach ($detalles as $detalle) {
                 DetalleVenta::create([
-                    'venta_id' => $venta->id,
-                    'producto_id' => $detalle->producto_id,
-                    'cantidad' => $detalle->cantidad,
-                    'precio_unitario' => $detalle->producto->precio,
+                    'venta_id'       => $venta->id,
+                    'producto_id'    => $detalle->producto_id,
+                    'cantidad'       => $detalle->cantidad,
+                    'precio_unitario'=> $detalle->precio_unitario,
                 ]);
 
-                // descontar stock
                 $detalle->producto->decrement('stock', $detalle->cantidad);
             }
 
-            // limpiar carrito
+            // Vaciar carrito
             $carrito->carritoDetalles()->delete();
         });
 
-        return redirect()->route('pedidos')->with('success', 'Compra realizada');
+        return redirect()->route('pedidos')
+            ->with('success', '¡Compra realizada con éxito!');
     }
 
-    // Helper
-    private function obtenerOCrearCarrito()
+    // ── Helper ───────────────────────────────────────
+    private function obtenerOCrearCarrito(): Carrito
     {
         return Carrito::firstOrCreate(
             ['user_id' => auth()->id()],
