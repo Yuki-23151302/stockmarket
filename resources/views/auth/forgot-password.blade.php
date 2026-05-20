@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión — Tienda de Abarrotes</title>
+    <title>Recuperar Contraseña — Tienda de Abarrotes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-            --azul:     #1e3a5f;
-            --azul-mid: #2c5282;
-            --naranja:  #e85d04;
+            --azul:       #1e3a5f;
+            --azul-mid:   #2c5282;
+            --naranja:    #e85d04;
             --naranja-dk: #c44d00;
-            --gris-bg:  #f4f6f9;
+            --gris-bg:    #f4f6f9;
             --gris-borde: #dde3ec;
-            --texto:    #1a202c;
-            --texto-sub: #64748b;
+            --texto:      #1a202c;
+            --texto-sub:  #64748b;
         }
         body {
             font-family: 'Nunito', sans-serif;
@@ -26,8 +26,6 @@
             display: flex;
             align-items: stretch;
         }
-
-        /* Panel izquierdo decorativo */
         .panel-left {
             width: 45%;
             background: var(--azul);
@@ -106,8 +104,6 @@
             font-size: 13px;
             flex-shrink: 0;
         }
-
-        /* Panel derecho — formulario */
         .panel-right {
             flex: 1;
             display: flex;
@@ -129,11 +125,9 @@
             font-size: 14px;
             color: var(--texto-sub);
             margin-bottom: 32px;
+            line-height: 1.6;
         }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
+        .form-group { margin-bottom: 18px; }
         .form-group label {
             display: block;
             font-size: 13px;
@@ -141,9 +135,7 @@
             color: var(--texto);
             margin-bottom: 6px;
         }
-        .input-wrap {
-            position: relative;
-        }
+        .input-wrap { position: relative; }
         .input-wrap i {
             position: absolute;
             left: 14px; top: 50%;
@@ -168,7 +160,6 @@
             box-shadow: 0 0 0 3px rgba(44,82,130,.1);
         }
         .input-wrap input.is-invalid { border-color: #ef4444; }
-
         .error-msg {
             font-size: 12px;
             color: #ef4444;
@@ -177,7 +168,19 @@
             align-items: center;
             gap: 4px;
         }
-
+        .success-msg {
+            background: #d1fae5;
+            border: 1px solid #6ee7b7;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #065f46;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .btn-submit {
             width: 100%;
             padding: 13px;
@@ -194,7 +197,6 @@
         }
         .btn-submit:hover { background: var(--naranja-dk); }
         .btn-submit:active { transform: scale(.98); }
-
         .form-footer {
             text-align: center;
             margin-top: 22px;
@@ -207,22 +209,7 @@
             text-decoration: none;
         }
         .form-footer a:hover { text-decoration: underline; }
-
-        .demo-box {
-            background: #f0f7ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 12px;
-            color: #1e40af;
-            margin-bottom: 20px;
-            line-height: 1.8;
-        }
-        .demo-box strong { font-weight: 700; }
-
-        @media (max-width: 768px) {
-            .panel-left { display: none; }
-        }
+        @media (max-width: 768px) { .panel-left { display: none; } }
     </style>
 </head>
 <body>
@@ -233,12 +220,12 @@
     <p>El Buen Precio — Tu tienda de confianza con todo lo que necesitas</p>
     <div class="feature-list">
         <div class="feature-item">
-            <div class="fi-icon"><i class="fas fa-boxes"></i></div>
-            Más de 200 productos disponibles
+            <div class="fi-icon"><i class="fas fa-lock"></i></div>
+            Recuperación segura de cuenta
         </div>
         <div class="feature-item">
-            <div class="fi-icon"><i class="fas fa-truck"></i></div>
-            Gestión de pedidos en tiempo real
+            <div class="fi-icon"><i class="fas fa-envelope"></i></div>
+            Enlace enviado a tu correo
         </div>
         <div class="feature-item">
             <div class="fi-icon"><i class="fas fa-shield-alt"></i></div>
@@ -249,19 +236,17 @@
 
 <div class="panel-right">
     <div class="form-card">
-        <h2>Bienvenido de nuevo</h2>
-        <p class="subtitle">Ingresa tus credenciales para continuar</p>
+        <h2>¿Olvidaste tu contraseña?</h2>
+        <p class="subtitle">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
 
-        {{-- Usuarios de demostración --}}
-        <div class="demo-box">
-            <strong>Usuarios de prueba:</strong><br>
-            Admin: <strong>admin@example.com</strong> / admin123<br>
-            Cliente: <strong>cliente@example.com</strong> / cliente123
-        </div>
+        @if (session('status'))
+            <div class="success-msg">
+                <i class="fas fa-check-circle"></i> {{ session('status') }}
+            </div>
+        @endif
 
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('password.email') }}">
             @csrf
-
             <div class="form-group">
                 <label for="email">Correo electrónico</label>
                 <div class="input-wrap">
@@ -281,36 +266,13 @@
                 @enderror
             </div>
 
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <div class="input-wrap">
-                    <i class="fas fa-lock"></i>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="••••••••"
-                        class="{{ $errors->has('password') ? 'is-invalid' : '' }}"
-                        autocomplete="current-password"
-                    >
-                </div>
-                @error('password')
-                    <div class="error-msg"><i class="fas fa-circle-exclamation"></i> {{ $message }}</div>
-                @enderror
-                <div style="text-align:right; margin-top: 6px;">
-                    <a href="{{ route('password.request') }}" style="font-size:12px; color:var(--naranja); font-weight:700; text-decoration:none;">
-                        ¿Olvidaste tu contraseña?
-                    </a>
-                </div>
-            </div>
-
             <button type="submit" class="btn-submit">
-                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                <i class="fas fa-paper-plane"></i> Enviar enlace de recuperación
             </button>
         </form>
 
         <div class="form-footer">
-            ¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate aquí</a>
+            ¿Recordaste tu contraseña? <a href="{{ route('login') }}">Iniciar sesión</a>
         </div>
     </div>
 </div>
