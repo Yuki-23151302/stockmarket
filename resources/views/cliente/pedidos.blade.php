@@ -134,7 +134,7 @@
                     <div class="order-item">
                         <div class="oi-img">
                             @if($detalle->producto && $detalle->producto->imagen)
-                                <img src="{{ asset('storage/' . $detalle->producto->imagen) }}" alt="">
+                                <img src="{{ asset('public/images/productos/' . $detalle->producto->imagen) }}" alt="">
                             @else
                                 <i class="fas fa-box"></i>
                             @endif

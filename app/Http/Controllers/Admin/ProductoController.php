@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Categoria;
 use App\Models\Producto;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
@@ -49,10 +48,10 @@ class ProductoController extends Controller
             'imagen'       => 'nullable|image|max:2048',
         ]);
 
-        // Subir imagen si se proporcionó
         if ($request->hasFile('imagen')) {
-            $datos['imagen'] = $request->file('imagen')
-                ->store('productos', 'public');
+            $nombreArchivo = $request->file('imagen')->getClientOriginalName();
+            $request->file('imagen')->move(public_path('images/productos'), $nombreArchivo);
+            $datos['imagen'] = 'images/productos/' . $nombreArchivo;
         }
 
         Producto::create($datos);
@@ -84,12 +83,12 @@ class ProductoController extends Controller
         ]);
 
         if ($request->hasFile('imagen')) {
-            // Eliminar imagen anterior si existe
-            if ($producto->imagen) {
-                Storage::disk('public')->delete($producto->imagen);
+            if ($producto->imagen && file_exists(public_path($producto->imagen))) {
+                unlink(public_path($producto->imagen));
             }
-            $datos['imagen'] = $request->file('imagen')
-                ->store('productos', 'public');
+            $nombreArchivo = $request->file('imagen')->getClientOriginalName();
+            $request->file('imagen')->move(public_path('images/productos'), $nombreArchivo);
+            $datos['imagen'] = 'images/productos/' . $nombreArchivo;
         }
 
         $producto->update($datos);
@@ -103,8 +102,8 @@ class ProductoController extends Controller
     {
         $producto = Producto::findOrFail($id);
 
-        if ($producto->imagen) {
-            Storage::disk('public')->delete($producto->imagen);
+        if ($producto->imagen && file_exists(public_path($producto->imagen))) {
+            unlink(public_path($producto->imagen));
         }
 
         $producto->delete();

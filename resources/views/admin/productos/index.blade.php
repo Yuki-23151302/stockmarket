@@ -208,7 +208,7 @@
                             <td>
                                 <div class="prod-img">
                                     @if($p->imagen)
-                                        <img src="{{ asset('storage/' . $p->imagen) }}" alt="{{ $p->nombre }}">
+                                        <img src="{{ asset('public/images/productos/' . $p->imagen) }}" alt="{{ $p->nombre }}">
                                     @else
                                         <i class="fas fa-box"></i>
                                     @endif
